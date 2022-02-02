@@ -2,6 +2,7 @@ from .YTDLSource import YTDLSource
 import discord
 from icecream import ic
 
+
 class Song:
     __slots__ = ('source', 'requester')
 

@@ -3,6 +3,7 @@ import itertools
 import random
 from icecream import ic
 
+
 class SongQueue(asyncio.Queue):
     def __getitem__(self, item):
         if isinstance(item, slice):

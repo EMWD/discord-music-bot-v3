@@ -5,6 +5,7 @@ from discord.ext import commands
 from .SongQueue import SongQueue
 from .Errors import VoiceError
 
+
 class VoiceState:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):
         self.bot = bot
