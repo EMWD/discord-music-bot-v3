@@ -15,9 +15,8 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 bot = commands.Bot('1', description='Yet another music bot.')
 bot.add_cog(Music(bot))
 
-
 @bot.event
 async def on_ready():
-    print('Logged in as:\n{0.user.name}\n{0.user.id}'.format(bot))
+    print('{0.user.name} - Started'.format(bot))
 
 bot.run(os.environ.get("TOKEN"))

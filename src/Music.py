@@ -38,6 +38,12 @@ class Music(commands.Cog):
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
 
+    @commands.command(name='i', aliases=['iam', 'who'])
+    @commands.has_permissions(manage_guild=True)
+    async def _iam(self, ctx: commands.Context):
+        """Shows info about bot."""
+        await ctx.send('My name is: {0.user.name}\nId is: {0.user.id}'.format(self.bot))
+
     @commands.command(name='join', invoke_without_subcommand=True)
     async def _join(self, ctx: commands.Context):
         """Joins a voice channel."""
@@ -80,17 +86,21 @@ class Music(commands.Cog):
         del self.voice_states[ctx.guild.id]
 
     @commands.command(name='volume',  aliases=['v', 'vol'])
-    async def _volume(self, ctx: commands.Context, *, volume: int):
+    async def _volume(self, ctx: commands.Context, *, volume: int=0):
         """Sets the volume of the player."""
 
-        if not ctx.voice_state.is_playing:
-            return await ctx.send('Nothing being played at the moment.')
+        if int(volume) == 0:
+             await ctx.send(f'Current volume = {ctx.voice_state.volume}%')
+        else:
+            print('KEEP GOING')
+            if not ctx.voice_state.is_playing:
+                return await ctx.send('Nothing being played at the moment.')
 
-        if 0 > volume > 100:
-            return await ctx.send('Volume must be between 0 and 100')
+            if 0 > volume > 100:
+                return await ctx.send('Volume must be between 0 and 100')
 
-        ctx.voice_state.volume = volume / 100
-        await ctx.send('Volume of the player set to {}%'.format(volume))
+            ctx.voice_state.volume = volume / 100
+            await ctx.send(f'Volume: {volume}%')
 
     @commands.command(name='now', aliases=['current', 'playing'])
     async def _now(self, ctx: commands.Context):
@@ -98,7 +108,7 @@ class Music(commands.Cog):
 
         await ctx.send(embed=ctx.voice_state.current.create_embed())
 
-    @commands.command(name='pause')
+    @commands.command(name='pause',  aliases=['pa'])
     @commands.has_permissions(manage_guild=True)
     async def _pause(self, ctx: commands.Context):
         """Pauses the currently playing song."""
@@ -106,7 +116,7 @@ class Music(commands.Cog):
         ctx.voice_state.voice.pause()
         await ctx.message.add_reaction('⏯')
 
-    @commands.command(name='resume')
+    @commands.command(name='resume', aliases=['re'])
     @commands.has_permissions(manage_guild=True)
     async def _resume(self, ctx: commands.Context):
         """Resumes a currently paused song."""
@@ -114,7 +124,7 @@ class Music(commands.Cog):
         ctx.voice_state.voice.resume()
         await ctx.message.add_reaction('⏯')
 
-    @commands.command(name='stop')
+    @commands.command(name='stop',  aliases=['st'])
     @commands.has_permissions(manage_guild=True)
     async def _stop(self, ctx: commands.Context):
         """Stops playing song and clears the queue."""
@@ -123,7 +133,7 @@ class Music(commands.Cog):
         ctx.voice_state.voice.stop()
         await ctx.message.add_reaction('⏹')
 
-    @commands.command(name='skip')
+    @commands.command(name='skip', aliases=['sk'])
     async def _skip(self, ctx: commands.Context):
         """Vote to skip a song. The requester can automatically skip.
         3 skip votes are needed for the song to be skipped.
@@ -164,7 +174,7 @@ class Music(commands.Cog):
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
-
+            
         ctx.voice_state.songs.shuffle()
         await ctx.send('Shuffled')
 
