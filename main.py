@@ -1,22 +1,22 @@
 import os
 import youtube_dl
 from discord.ext import commands
+from src.Common import Common
 from src.Music import Music
-from dotenv import load_dotenv, find_dotenv
+from helpers.dotenv_setup import env
 
-
-# dotenv setup
-load_dotenv(find_dotenv())
 
 # Silence useless bug reports messages
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 
-bot = commands.Bot('1', description='Yet another music bot.')
+bot = commands.Bot('1', description='Kusic the music bot.')
 bot.add_cog(Music(bot))
+bot.add_cog(Common(bot))
+
 
 @bot.event
 async def on_ready():
     print('{0.user.name} - Started'.format(bot))
 
-bot.run(os.environ.get("TOKEN"))
+bot.run(env.get("TOKEN"))

@@ -1,5 +1,6 @@
 import math
 import discord
+import asyncio
 from icecream import ic
 from discord.ext import commands
 from .VoiceState import VoiceState
@@ -21,6 +22,11 @@ class Music(commands.Cog):
 
         return state
 
+    async def clean(self, ctx: commands.Context, lines_amount=2, delay=1):
+        '''Delete certain amount of messages in text channel with some delay'''
+        await asyncio.sleep(delay)
+        await ctx.channel.purge(limit=lines_amount)
+
     def cog_unload(self):
         for state in self.voice_states.values():
             self.bot.loop.create_task(state.stop())
@@ -37,12 +43,6 @@ class Music(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send('An error occurred: {}'.format(str(error)))
-
-    @commands.command(name='i', aliases=['iam', 'who'])
-    @commands.has_permissions(manage_guild=True)
-    async def _iam(self, ctx: commands.Context):
-        """Shows info about bot."""
-        await ctx.send('My name is: {0.user.name}\nId is: {0.user.id}'.format(self.bot))
 
     @commands.command(name='join', invoke_without_subcommand=True)
     async def _join(self, ctx: commands.Context):
@@ -86,11 +86,11 @@ class Music(commands.Cog):
         del self.voice_states[ctx.guild.id]
 
     @commands.command(name='volume',  aliases=['v', 'vol'])
-    async def _volume(self, ctx: commands.Context, *, volume: int=0):
+    async def _volume(self, ctx: commands.Context, *, volume: int = 0):
         """Sets the volume of the player."""
 
         if int(volume) == 0:
-             await ctx.send(f'Current volume = {ctx.voice_state.volume}%')
+            await ctx.send(f'Current volume = {ctx.voice_state.volume}%')
         else:
             print('KEEP GOING')
             if not ctx.voice_state.is_playing:
@@ -151,7 +151,8 @@ class Music(commands.Cog):
         """
 
         if len(ctx.voice_state.songs) == 0:
-            return await ctx.send('Empty queue.')
+            await ctx.send('Empty queue.')
+            return await self.clean(ctx=ctx)
 
         items_per_page = 10
         pages = math.ceil(len(ctx.voice_state.songs) / items_per_page)
@@ -167,6 +168,7 @@ class Music(commands.Cog):
         embed = (discord.Embed(description='**{} tracks:**\n\n{}'.format(len(ctx.voice_state.songs), queue))
                  .set_footer(text='Viewing page {}/{}'.format(page, pages)))
         await ctx.send(embed=embed)
+        await self.clean(ctx=ctx)
 
     @commands.command(name='shuffle')
     async def _shuffle(self, ctx: commands.Context):
@@ -174,7 +176,7 @@ class Music(commands.Cog):
 
         if len(ctx.voice_state.songs) == 0:
             return await ctx.send('Empty queue.')
-            
+
         ctx.voice_state.songs.shuffle()
         await ctx.send('Shuffled')
 
