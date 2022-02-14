@@ -74,7 +74,7 @@ class Music(commands.Cog):
 
         ctx.voice_state.voice = await destination.connect()
 
-    @commands.command(name='leave', aliases=['disconnect'])
+    @commands.command(name='leave', aliases=['l', 'dis', 'disconnect'])
     @commands.has_permissions(manage_guild=True)
     async def _leave(self, ctx: commands.Context):
         """Clears the queue and leaves the voice channel."""
@@ -124,7 +124,7 @@ class Music(commands.Cog):
         ctx.voice_state.voice.resume()
         await ctx.message.add_reaction('⏯')
 
-    @commands.command(name='stop',  aliases=['st'])
+    @commands.command(name='stop',  aliases=['s', 'st'])
     @commands.has_permissions(manage_guild=True)
     async def _stop(self, ctx: commands.Context):
         """Stops playing song and clears the queue."""
@@ -225,9 +225,9 @@ class Music(commands.Cog):
                 await ctx.send('An error occurred while processing this request: {}'.format(str(e)))
             else:
                 song = Song(source)
-
                 await ctx.voice_state.songs.put(song)
                 await ctx.send('Enqueued {}'.format(str(source)))
+                await self.clean(ctx=ctx, delay=5, lines_amount=3)  
 
     @_join.before_invoke
     @_play.before_invoke

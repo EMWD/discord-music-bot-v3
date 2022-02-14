@@ -10,7 +10,7 @@ from helpers.dotenv_setup import env
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 
-bot = commands.Bot('1', description='Kusic the music bot.')
+bot = commands.Bot('!', description='Kusic the music bot.')
 bot.add_cog(Music(bot))
 bot.add_cog(Common(bot))
 
